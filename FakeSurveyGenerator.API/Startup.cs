@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FakeSurveyGenerator.API.Application.Queries;
+using FakeSurveyGenerator.Domain.AggregatesModel.AuditAggregate;
 using FakeSurveyGenerator.Domain.AggregatesModel.SurveyAggregate;
 using FakeSurveyGenerator.Infrastructure;
 using FakeSurveyGenerator.Infrastructure.Repositories;
@@ -32,6 +33,7 @@ namespace FakeSurveyGenerator.API
 
             services.AddScoped<ISurveyQueries>(s => new SurveyQueries(Configuration.GetConnectionString("SurveyContext")));
             services.AddScoped<ISurveyRepository, SurveyRepository>();
+            services.AddScoped<IAuditRepository, AuditRepository>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

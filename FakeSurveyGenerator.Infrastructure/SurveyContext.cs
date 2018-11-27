@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FakeSurveyGenerator.Domain.AggregatesModel.AuditAggregate;
 using FakeSurveyGenerator.Domain.AggregatesModel.SurveyAggregate;
 using FakeSurveyGenerator.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +19,32 @@ namespace FakeSurveyGenerator.Infrastructure
         public DbSet<Survey> Surveys { get; set; }
         public DbSet<SurveyOption> SurveyOptions { get; set; }
 
+        public DbSet<Audit> Audits { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Survey>(ConfigureSurvey);
             modelBuilder.Entity<SurveyOption>(ConfigureSurveyOption);
+            modelBuilder.Entity<Audit>(ConfigureAudit);
+        }
+
+        private void ConfigureAudit(EntityTypeBuilder<Audit> auditConfiguration)
+        {
+            auditConfiguration.ToTable("Audit", DEFAULT_SCHEMA);
+
+            auditConfiguration.HasKey(o => o.Id);
+
+            auditConfiguration.Property(o => o.Id)
+                .ForSqlServerUseSequenceHiLo("AuditSeq", DEFAULT_SCHEMA);
+
+            auditConfiguration.Ignore(b => b.DomainEvents);
+
+            auditConfiguration.Property<string>("WhatHappened")
+                .HasMaxLength(250)
+                .IsRequired();
+
+            auditConfiguration.Property<DateTime>("When")
+                .IsRequired();
         }
 
         private void ConfigureSurvey(EntityTypeBuilder<Survey> surveyConfiguration)
